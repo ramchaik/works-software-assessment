@@ -2,7 +2,7 @@ import request from 'supertest';
 import express, { Express } from 'express';
 
 import router from '../../routes/notes';
-import { saveNote, findAllNotes, updateNote, deleteNote } from '../../model/note';
+import { saveNote, findAllNotes, updateNote, deleteNote, fetchNoteById } from '../../model/note';
 import mocked = jest.mocked;
 
 jest.mock('../../model/note');
@@ -29,6 +29,19 @@ describe('Note API endpoints', () => {
 
         expect(response.status).toBe(200);
         expect(response.body).toEqual(mockNotes);
+    });
+
+    it('GET /notes/:id - should get a note by ID', async () => {
+        const noteId = '1';
+        const mockNote = { id: noteId, title: 'Note 1', content: 'Content 1' };
+
+        // @ts-ignore
+        mocked(fetchNoteById).mockResolvedValue(mockNote);
+
+        const response = await request(app).get(`/api/v1/notes/${noteId}`);
+
+        expect(response.status).toBe(200);
+        expect(response.body).toEqual(mockNote);
     });
 
     it('POST /notes - should create a new note', async () => {

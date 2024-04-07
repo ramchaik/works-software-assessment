@@ -1,5 +1,5 @@
 import express, {Request, Response} from 'express';
-import {saveNote, findAllNotes, updateNote, deleteNote} from '../model/note';
+import {saveNote, findAllNotes, updateNote, deleteNote, fetchNoteById} from '../model/note';
 import {handleError} from '../utils/error';
 import {HTTP_CODES} from '../utils/http';
 
@@ -17,6 +17,33 @@ router.get('/', async (req: Request, res: Response) => {
         res.json(notes);
     } catch (error) {
         return handleError(res, error as Error);
+    }
+});
+
+
+/**
+ * @api {get} /notes/:id Get a note by ID
+ * @apiName GetNote
+ * @apiGroup Notes
+ *
+ * @apiParam {String} id Note ID.
+ *
+ * @apiSuccess {Object} note Note object.
+ */
+router.get('/:id', async (req: Request, res: Response) => {
+    const {id} = req.params;
+    if (!id) {
+        return handleError(res, new Error("Note ID is required"), HTTP_CODES.BAD_REQUEST);
+    }
+
+    try {
+        const note = await fetchNoteById(id);
+        if (!note) {
+            return handleError(res, new Error("Note not found"), HTTP_CODES.NOT_FOUND);
+        }
+        res.json(note);
+    } catch (error) {
+        handleError(res, error as Error, HTTP_CODES.BAD_REQUEST);
     }
 });
 
