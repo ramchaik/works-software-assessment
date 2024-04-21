@@ -1,8 +1,9 @@
 import { render, fireEvent, screen } from "@testing-library/react";
+import '@testing-library/jest-dom';
 import NoteForm from "./NoteForm";
 
 jest.mock("./NoteForm.css", () => ({
-  noteItem: "noteItem",
+  css: "css",
 }));
 
 describe("NoteForm", () => {
@@ -14,9 +15,7 @@ describe("NoteForm", () => {
 
   it("renders the form with input and textarea", () => {
     setup();
-    // @ts-ignore
     expect(screen.getByPlaceholderText("Title")).toBeInTheDocument();
-    // @ts-ignore
     expect(screen.getByPlaceholderText("Content")).toBeInTheDocument();
   });
 

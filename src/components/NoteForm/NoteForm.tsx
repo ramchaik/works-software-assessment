@@ -24,11 +24,13 @@ const NoteForm: React.FC<NoteFormProps> = ({ onAdd }) => {
         value={title}
         onChange={(e) => setTitle(e.target.value)}
         placeholder="Title"
+        aria-label="note-title"
       />
       <textarea        
         value={content}
         onChange={(e) => setContent(e.target.value)}
         placeholder="Content"
+        aria-label="note-content"
       />
       <button type="submit">Add Note</button>
     </form>

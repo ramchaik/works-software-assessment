@@ -33,10 +33,12 @@ const NoteItem: React.FC<NoteItemProps> = ({ note, onDelete, onEdit }) => {
         value={editedTitle}
         onChange={(e) => setEditedTitle(e.target.value)}
         placeholder="Title"
+        aria-label="edit-note-title"
       />
       <textarea
         value={editedContent}
         onChange={(e) => setEditedContent(e.target.value)}
+        aria-label="edit-note-content"
       />
     </div>
   );

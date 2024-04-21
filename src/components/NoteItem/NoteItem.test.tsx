@@ -1,9 +1,10 @@
 import { render, fireEvent, screen } from "@testing-library/react";
+import "@testing-library/jest-dom";
 
 import NoteItem from "./NoteItem";
 
 jest.mock("./NoteItem.css", () => ({
-  noteItem: "noteItem",
+  css: "css",
 }));
 
 type Note = {
@@ -28,20 +29,16 @@ describe("NoteItem", () => {
     );
   };
 
-  it("renders the note title and content initially", () => {
+  it("renders the note-title and content initially", () => {
     setup();
-    // @ts-ignore
     expect(screen.getByText("Test Note")).toBeInTheDocument();
-    // @ts-ignore
     expect(screen.getByText("This is a test note.")).toBeInTheDocument();
   });
 
   it("renders the edit form when the Edit button is clicked", () => {
     setup();
     fireEvent.click(screen.getByText("Edit"));
-    // @ts-ignore
     expect(screen.getByPlaceholderText("Title")).toBeInTheDocument();
-    // @ts-ignore
     expect(screen.getByText("This is a test note.")).toBeInTheDocument();
   });
 

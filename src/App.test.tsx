@@ -1,98 +1,99 @@
-import { render, fireEvent, screen } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
-import App from './App';
-import toast from 'react-hot-toast';
+import { render, fireEvent, screen } from "@testing-library/react";
+import "@testing-library/jest-dom";
+import App from "./App";
 
 jest.mock("./App.css", () => ({
-    noteItem: "noteItem",
-  }));
-
-  jest.mock("./components/NoteItem/NoteItem.css", () => ({
-    noteItem: "noteItem",
-  }));
-
-  jest.mock("./components/NoteList/NoteList.css", () => ({
-    noteItem: "noteItem",
-  }));
-
-  jest.mock("./components/NoteForm/NoteForm.css", () => ({
-    noteItem: "noteItem",
-  }));
-
-// Mock toast to avoid actual toast notifications during tests
-jest.mock('react-hot-toast', () => ({
- toast: {
-    error: jest.fn(),
-    success: jest.fn(),
- },
+  css: "css",
 }));
 
-describe.skip('App', () => {
- it('renders the Note Taking App title', () => {
+jest.mock("./components/NoteForm/NoteForm.css", () => ({
+  css: "css",
+}));
+
+jest.mock("./components/NoteList/NoteList.css", () => ({
+  css: "css",
+}));
+jest.mock("./components/NoteItem/NoteItem.css", () => ({
+  css: "css",
+}));
+
+jest.mock("react-hot-toast", () => ({
+  default: {
+    error: jest.fn(),
+    success: jest.fn(),
+  },
+  Toaster: () => <div>Toaster</div>,
+}));
+
+describe("App", () => {
+  test("renders App component", () => {
     render(<App />);
-    // @ts-ignore
-    expect(screen.getByText('Note Taking App')).toBeInTheDocument();
- });
+    expect(screen.getByText("Note Taking App")).toBeInTheDocument();
+  });
 
- it('adds a note when the form is submitted with valid input', () => {
+  test("adds a note", async () => {
     render(<App />);
-    const titleInput = screen.getByPlaceholderText('Title');
-    const contentTextarea = screen.getByPlaceholderText('Content');
-    const submitButton = screen.getByText('Add Note');
+    const noteTitleInput = screen.getByLabelText("note-title"); // Adjust the label text as per your form
+    const noteContentInput = screen.getByLabelText("note-content"); // Adjust the label text as per your form
 
-    fireEvent.change(titleInput, { target: { value: 'Test Title' } });
-    fireEvent.change(contentTextarea, { target: { value: 'Test Content' } });
-    fireEvent.click(submitButton);
+    const addButton = screen.getByText("Add Note");
 
-    expect(toast.success).toHaveBeenCalledWith('Note added successfully!');
- });
+    fireEvent.change(noteTitleInput, { target: { value: "New note-title" } });
+    fireEvent.change(noteContentInput, {
+      target: { value: "New note-content" },
+    });
 
- it('shows an error toast when the form is submitted with invalid input', () => {
-    render(<App />);
-    const submitButton = screen.getByText('Add Note');
+    fireEvent.click(addButton);
 
-    fireEvent.click(submitButton);
+    expect(await screen.findByText("New note-title")).toBeInTheDocument();
+    expect(await screen.findByText("New note-content")).toBeInTheDocument();
+  });
 
-    expect(toast.error).toHaveBeenCalledWith('Please fill in all fields!');
- });
+  function addNote() {
+      const noteTitleInput = screen.getByLabelText("note-title");
+      const noteContentInput = screen.getByLabelText("note-content");
+   
+      fireEvent.change(noteTitleInput, { target: { value: "New note-title" } });
+      fireEvent.change(noteContentInput, {
+         target: { value: "New note-content" },
+      });
+   
+      const addButton = screen.getByText("Add Note");
+      fireEvent.click(addButton);
+   }
 
- it('deletes a note when the delete button is clicked', () => {
-    render(<App />);
-    // Assuming you have a way to add a note first, for example:
-    fireEvent.change(screen.getByPlaceholderText('Title'), { target: { value: 'Test Title' } });
-    fireEvent.change(screen.getByPlaceholderText('Content'), { target: { value: 'Test Content' } });
-    fireEvent.click(screen.getByText('Add Note'));
+  test("edits a note", async () => {
+      render(<App />);
+      addNote();
 
-    // Simulate deleting a note
-    const deleteButton = screen.getByText('Delete'); // Adjust the selector based on your actual implementation
-    userEvent.click(deleteButton);
+      const editButton = screen.getByText("Edit");
 
-    expect(toast.success).toHaveBeenCalledWith('Note deleted successfully!');
-    // Optionally, check that the note is no longer rendered
-    // expect(screen.queryByText('Test Title')).not.toBeInTheDocument();
- });
+      fireEvent.click(editButton);
+   
+      const noteTitleInput = screen.getByLabelText("edit-note-title");
+      const noteContentInput = screen.getByLabelText("edit-note-content");
+   
+      fireEvent.change(noteTitleInput, { target: { value: "Updated note-title" } });
+      fireEvent.change(noteContentInput, {
+         target: { value: "Updated note-content" },
+      });
+   
+      const saveButton = screen.getByText("Save");
 
- it('edits a note when the edit button is clicked', () => {
-    render(<App />);
-    // Assuming you have a way to add a note first, similar to the delete test
+      fireEvent.click(saveButton);
 
-    // Simulate editing a note
-    const editButton = screen.getByText('Edit'); // Adjust the selector based on your actual implementation
-    userEvent.click(editButton);
+      expect(await screen.findByText("Updated note-title")).toBeInTheDocument();
+      expect(await screen.findByText("Updated note-content")).toBeInTheDocument();
+   });
 
-    // Assuming you have inputs for editing, fill them out
-    const titleInput = screen.getByPlaceholderText('Edit Title');
-    const contentTextarea = screen.getByPlaceholderText('Edit Content');
-    userEvent.type(titleInput, 'Updated Title');
-    userEvent.type(contentTextarea, 'Updated Content');
-
-    // Simulate submitting the edit form
-    const submitEditButton = screen.getByText('Submit Edit'); // Adjust the selector based on your actual implementation
-    userEvent.click(submitEditButton);
-
-    expect(toast.success).toHaveBeenCalledWith('Note updated successfully!');
-    // Optionally, check that the note is updated in the UI
-    // expect(screen.getByText('Updated Title')).toBeInTheDocument();
- });
-
+   test("deletes a note", async () => {
+      render(<App />);
+      addNote();
+   
+      const deleteButton = screen.getByText("Delete");
+      fireEvent.click(deleteButton);
+   
+      expect(screen.queryByText("New note-title")).not.toBeInTheDocument();
+      expect(screen.queryByText("New note-content")).not.toBeInTheDocument();
+   });
 });
