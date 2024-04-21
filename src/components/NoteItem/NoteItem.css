@@ -1,0 +1,16 @@
+.note-item {
+  border: 1px solid #757f8a;
+  border-radius: 8px;
+  padding: 5%;
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+
+.note-item-actions {
+  display: flex;
+  justify-content: space-evenly;
+}
+
+.note-item-actions button {
+  margin-top: 3%;
+}
