@@ -33,8 +33,8 @@ describe("App", () => {
 
   test("adds a note", async () => {
     render(<App />);
-    const noteTitleInput = screen.getByLabelText("note-title"); // Adjust the label text as per your form
-    const noteContentInput = screen.getByLabelText("note-content"); // Adjust the label text as per your form
+    const noteTitleInput = screen.getByLabelText("note-title");
+    const noteContentInput = screen.getByLabelText("note-content");
 
     const addButton = screen.getByText("Add Note");
 
